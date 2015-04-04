@@ -43,7 +43,11 @@ int main(int argc, char* argv[]) {
   variants.init();
   UCI::init(Options);
   Tune::init();
+<<<<<<< 07183f8229e673a562426f764f4a66533e090d91
   PSQT::init(variants.find(Options["UCI_Variant"])->second);
+=======
+  PSQT::init(variants.find("chess")->second);
+>>>>>>> Fishtest Tuning Framework
   Bitboards::init();
   Position::init();
   Bitbases::init();
