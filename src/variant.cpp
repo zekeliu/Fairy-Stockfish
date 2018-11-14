@@ -487,6 +487,18 @@ VariantMap variants; // Global object
         v->stalemateValue = -VALUE_MATE;
         return v;
     }
+    Variant* dragon_hawk_variant() {
+        Variant* v = fairy_variant_base();
+        v->maxRank = RANK_8;
+        v->maxFile = FILE_J;
+        v->reset_pieces();
+        v->add_piece(AMAZON, 'd');
+        v->add_piece(HAWK, 'h');
+        v->add_piece(KING, 'k');
+        v->startFen = "7hhh/7hkh/7hhh/10/10/10/D9/KD8 w - - 0 1";
+        v->promotionPieceTypes = {};
+        return v;
+    }
 #endif
 
 
@@ -536,6 +548,7 @@ void VariantMap::init() {
     add("embassy", embassy_variant());
     add("jesonmor", jesonmor_variant());
     add("courier", courier_variant());
+    add("dragon-hawk", dragon_hawk_variant());
 #endif
 }
 

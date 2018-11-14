@@ -450,6 +450,8 @@ void Bitboards::init() {
       {}, // immobile
       { SOUTH, WEST, EAST, NORTH }, // wazir
       { SOUTH_WEST, SOUTH, SOUTH_EAST, WEST, EAST, NORTH_WEST, NORTH, NORTH_EAST }, // commoner
+      { 2 * SOUTH_WEST, 2 * SOUTH_EAST, 2 * NORTH_WEST, 2 * NORTH_EAST,
+        3 * SOUTH_WEST, 3 * SOUTH_EAST, 3 * NORTH_WEST, 3 * NORTH_EAST }, // hawk
       { SOUTH_WEST, SOUTH, SOUTH_EAST, WEST, EAST, NORTH_WEST, NORTH, NORTH_EAST } // king
   };
   int stepsQuiet[][13] = {
@@ -486,6 +488,8 @@ void Bitboards::init() {
       {}, // immobile
       { SOUTH, WEST, EAST, NORTH }, // wazir
       { SOUTH_WEST, SOUTH, SOUTH_EAST, WEST, EAST, NORTH_WEST, NORTH, NORTH_EAST }, // commoner
+      { 2 * SOUTH_WEST, 2 * SOUTH_EAST, 2 * NORTH_WEST, 2 * NORTH_EAST,
+        3 * SOUTH_WEST, 3 * SOUTH_EAST, 3 * NORTH_WEST, 3 * NORTH_EAST }, // hawk
       { SOUTH_WEST, SOUTH, SOUTH_EAST, WEST, EAST, NORTH_WEST, NORTH, NORTH_EAST } // king
   };
   Direction sliderCapture[][9] = {
@@ -516,6 +520,7 @@ void Bitboards::init() {
     {}, // immobile
     {}, // wazir
     {}, // commoner
+    {}, // hawk
     {} // king
   };
   Direction sliderQuiet[][9] = {
@@ -546,6 +551,7 @@ void Bitboards::init() {
     {}, // immobile
     {}, // wazir
     {}, // commoner
+    {}, // hawk
     {} // king
   };
   int sliderDistCapture[] = {
@@ -576,6 +582,7 @@ void Bitboards::init() {
     0, // immobile
     0, // wazir
     0, // commoner
+    0, // hawk
     0  // king
   };
   int sliderDistQuiet[] = {
@@ -606,6 +613,7 @@ void Bitboards::init() {
     0, // immobile
     0, // wazir
     0, // commoner
+    0, // hawk
     0  // king
   };
 
