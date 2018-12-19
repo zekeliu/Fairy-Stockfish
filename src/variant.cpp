@@ -376,6 +376,19 @@ VariantMap variants; // Global object
         v->blackFlag = Rank1BB;
         return v;
     }
+    Variant* pawnsonly_variant() {
+        Variant* v = fairy_variant_base();
+        v->reset_pieces();
+        v->add_piece(PAWN, 'p');
+        v->startFen = "8/pppppppp/8/8/8/8/PPPPPPPP/8 w - - 0 1";
+        v->promotionPieceTypes = {QUEEN};
+        v->castling = false;
+        v->stalemateValue = -VALUE_MATE;
+        v->flagPiece = QUEEN;
+        v->whiteFlag = Rank8BB;
+        v->blackFlag = Rank1BB;
+        return v;
+    }
     Variant* connect4_variant() {
         Variant* v = fairy_variant_base();
         v->maxRank = RANK_6;
@@ -535,6 +548,7 @@ void VariantMap::init() {
     add("shatar", shatar_variant());
     add("clobber", clobber_variant());
     add("breakthrough", breakthrough_variant());
+    add("pawnsonly", pawnsonly_variant());
     add("connect4", connect4_variant());
     add("tictactoe", tictactoe_variant());
 #ifdef LARGEBOARDS
