@@ -286,6 +286,7 @@ VariantMap variants; // Global object
         v->whiteFlag = Rank4BB;
         v->blackFlag = Rank1BB;
         v->shogiDoubledPawn = true;
+        v->promotedPieceType[SHOGI_PAWN] = NO_PIECE_TYPE;
         return v;
     }
     Variant* judkinsshogi_variant() {
