@@ -771,7 +771,7 @@ namespace {
         && !(   pos.extinction_value() == -VALUE_MATE
              && pos.extinction_piece_types().find(ALL_PIECES) == pos.extinction_piece_types().end())
         && (pos.checking_permitted() || !pos.capture_the_flag_piece())
-        &&  eval - futility_margin(depth, improving) * (1 + !!pos.max_check_count()) >= beta
+        &&  eval - futility_margin(depth, improving) * (1 + !!pos.max_check_count() + pos.flip_enclosed_pieces()) >= beta
         &&  eval < VALUE_KNOWN_WIN) // Do not return unproven wins
         return eval;
 
@@ -866,10 +866,10 @@ namespace {
     }
 
     // Step 11. Internal iterative deepening (~2 Elo)
-    if (    depth >= (8 - 2 * pos.captures_to_hand()) * ONE_PLY
+    if (    depth >= (8 - 2 * pos.piece_drops()) * ONE_PLY
         && !ttMove)
     {
-        search<NT>(pos, ss, alpha, beta, depth - (7 - 2 * pos.captures_to_hand()) * ONE_PLY, cutNode);
+        search<NT>(pos, ss, alpha, beta, depth - (7 - 2 * pos.piece_drops()) * ONE_PLY, cutNode);
 
         tte = TT.probe(posKey, ttHit);
         ttValue = ttHit ? value_from_tt(tte->value(), ss->ply) : VALUE_NONE;
@@ -923,7 +923,7 @@ moves_loop: // When in check, search starts from here
       movedPiece = pos.moved_piece(move);
       givesCheck = gives_check(pos, move);
 
-      moveCountPruning =   depth * (1 + pos.captures_to_hand()) < 16 * ONE_PLY
+      moveCountPruning =   depth * (1 + pos.piece_drops()) < 16 * ONE_PLY
                         && moveCount >= FutilityMoveCounts[improving][depth / ONE_PLY];
 
       // Step 13. Extensions (~70 Elo)

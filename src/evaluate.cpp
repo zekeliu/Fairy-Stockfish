@@ -364,6 +364,30 @@ namespace {
         if (pos.captures_to_hand() && pos.count<KING>(Them) && pos.count<KING>(Us))
             score -= KingProximity * distance(s, pos.square<KING>(Us)) * distance(s, pos.square<KING>(Them));
 
+        // Bonus based on whether piece can be flipped or not
+        if (pos.flip_enclosed_pieces())
+        {
+            File f = file_of(s);
+            Rank r = rank_of(s);
+            bool edge   = (f == FILE_A || f == pos.max_file()) || (r == RANK_1 || r == pos.max_rank());
+            bool corner = (f == FILE_A || f == pos.max_file()) && (r == RANK_1 || r == pos.max_rank());
+            bool x_or_c = std::max(std::min(int(f), pos.max_file() - f), std::min(int(r), pos.max_rank() - r)) == 1;
+            if (corner)
+                score += make_score(1200, 1200);
+            else if (x_or_c)
+            {
+                Piece pc = pos.piece_on(make_square(f <= FILE_B ? FILE_A : pos.max_file(), r <= RANK_2 ? RANK_1 : pos.max_rank()));
+                if (pc == NO_PIECE)
+                    score -= make_score(300, 300);
+                else
+                    score += make_score(300, 300);
+            }
+            else if (edge)
+                score += make_score(100, 100);
+            else
+                score += make_score(20, 20) * (popcount(pos.board_bb() & DistanceRingBB[s][1] & pos.pieces(Them)) - popcount(pos.board_bb() & DistanceRingBB[s][1] & pos.pieces(Us)));
+        }
+
         if (Pt == BISHOP || Pt == KNIGHT)
         {
             // Bonus if piece is on an outpost square or can reach one
@@ -463,6 +487,8 @@ namespace {
         }
         Bitboard theirHalf = pos.board_bb() & ~forward_ranks_bb(Them, relative_rank(Them, Rank((pos.max_rank() - 1) / 2), pos.max_rank()));
         mobility[Us] += DropMobility * popcount(b & theirHalf & ~attackedBy[Them][ALL_PIECES]);
+        if (pos.enclosing_drop())
+            mobility[Us] += make_score(100, 100) * popcount(b);
     }
 
     return score;
@@ -961,7 +987,7 @@ namespace {
   Score Evaluation<T>::initiative(Value eg) const {
 
     // No initiative bonus for extinction variants
-    if (pos.extinction_value() != VALUE_NONE || pos.captures_to_hand() || pos.connect_n())
+    if (pos.extinction_value() != VALUE_NONE || pos.captures_to_hand() || pos.connect_n() || pos.flip_enclosed_pieces())
       return SCORE_ZERO;
 
     int outflanking = !pos.count<KING>(WHITE) || !pos.count<KING>(BLACK) ? 0
