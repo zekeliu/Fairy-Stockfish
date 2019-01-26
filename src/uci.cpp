@@ -317,6 +317,9 @@ string UCI::move(const Position& pos, Move m) {
   if (m == MOVE_NULL)
       return "0000";
 
+  if (type_of(m) == PASS)
+      return "pass";
+
   if (type_of(m) == CASTLING && !pos.is_chess960())
       to = make_square(to > from ? pos.castling_kingside_file() : pos.castling_queenside_file(), rank_of(from));
 

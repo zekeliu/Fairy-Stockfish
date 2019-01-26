@@ -475,6 +475,24 @@ VariantMap variants; // Global object
         v->connectN = 3;
         return v;
     }
+    Variant* othello_variant() {
+        Variant* v = fairy_variant_base();
+        v->reset_pieces();
+        v->add_piece(IMMOBILE_PIECE, 'p');
+        v->startFen = "8/8/8/3pP3/3Pp3/8/8/8[PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPpppppppppppppppppppppppppppppp] w 0 1";
+        v->pieceDrops = true;
+        v->promotionPieceTypes = {};
+        v->doubleStep = false;
+        v->castling = false;
+        v->stalemateValue = -VALUE_MATE;
+        v->stalematePieceCount = true;
+        v->enclosingDrop = true;
+        v->immobilityIllegal = false;
+        v->flipEnclosedPieces = true;
+        v->passOnStalemate = true;
+        v->secondPassEndsGame = true;
+        return v;
+    }
 #ifdef LARGEBOARDS
     Variant* shogi_variant() {
         Variant* v = minishogi_variant_base();
@@ -608,6 +626,7 @@ void VariantMap::init() {
     add("breakthrough", breakthrough_variant());
     add("connect4", connect4_variant());
     add("tictactoe", tictactoe_variant());
+    add("othello", othello_variant());
 #ifdef LARGEBOARDS
     add("shogi", shogi_variant());
     add("capablanca", capablanca_variant());

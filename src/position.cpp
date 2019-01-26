@@ -712,6 +712,27 @@ bool Position::legal(Move m) const {
   assert(is_ok(m));
   assert(type_of(m) != DROP || piece_drops());
 
+  // Position did not change for two ply (two successive passes)
+  if (   var->secondPassEndsGame
+      && st->pliesFromNull >= 2
+      && st->key == st->previous->previous->key
+      && st->key == (st->previous->key ^ Zobrist::side))
+      return false;
+
+  // Passing
+  if (type_of(m) == PASS)
+  {
+      if (checkers())
+          return false;
+      if (pass_on_stalemate())
+      {
+          for (const auto& move : MoveList<NON_EVASIONS>(*this))
+              if (type_of(move) != PASS && legal(move))
+                  return false;
+      }
+      return true;
+  }
+
   Color us = sideToMove;
   Square from = from_sq(m);
   Square to = to_sq(m);
@@ -905,6 +926,8 @@ bool Position::pseudo_legal(const Move m) const {
 bool Position::gives_check(Move m) const {
 
   assert(is_ok(m));
+  if (type_of(m) == PASS)
+      return false;
   assert(color_of(moved_piece(m)) == sideToMove);
 
   Square from = from_sq(m);
@@ -976,6 +999,15 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
 
   assert(is_ok(m));
   assert(&newSt != st);
+
+  if (type_of(m) == PASS)
+  {
+      // do null move, but propagate ply information
+      int plies = st->pliesFromNull;
+      do_null_move(newSt);
+      newSt.pliesFromNull = plies + 1;
+      return;
+  }
 
   thisThread->nodes.fetch_add(1, std::memory_order_relaxed);
   Key k = st->key ^ Zobrist::side;
@@ -1128,6 +1160,35 @@ void Position::do_move(Move m, StateInfo& newSt, bool givesCheck) {
                   set_castling_right(us, to);
           }
       }
+      // Flip enclosed pieces
+      if (flip_enclosed_pieces())
+      {
+          st->flippedPieces = 0;
+          // Find end of rows to be flipped
+          Bitboard b = attacks_bb(us, QUEEN, to, board_bb() & ~pieces(~us)) & ~DistanceRingBB[to][1] & pieces(us);
+          while(b)
+              st->flippedPieces |= between_bb(to, pop_lsb(&b));
+          // Flip pieces
+          Bitboard to_flip = st->flippedPieces;
+          while(to_flip)
+          {
+              Square s = pop_lsb(&to_flip);
+              Piece flipped = piece_on(s);
+              Piece resulting = ~flipped;
+
+              // remove opponent's piece
+              remove_piece(flipped, s);
+              k ^= Zobrist::psq[flipped][s];
+              st->materialKey ^= Zobrist::psq[flipped][pieceCount[flipped]];
+              st->nonPawnMaterial[them] -= PieceValue[MG][flipped];
+
+              // add our piece
+              put_piece(resulting, s);
+              k ^= Zobrist::psq[resulting][s];
+              st->materialKey ^= Zobrist::psq[resulting][pieceCount[resulting]-1];
+              st->nonPawnMaterial[us] += PieceValue[MG][resulting];
+          }
+      }
   }
   else if (type_of(m) != CASTLING)
       move_piece(pc, from, to);
@@ -1261,6 +1322,12 @@ void Position::undo_move(Move m) {
 
   assert(is_ok(m));
 
+  if (type_of(m) == PASS)
+  {
+      undo_null_move();
+      return;
+  }
+
   sideToMove = ~sideToMove;
 
   Color us = sideToMove;
@@ -1308,7 +1375,23 @@ void Position::undo_move(Move m) {
   else
   {
       if (type_of(m) == DROP)
+      {
+          if (flip_enclosed_pieces())
+          {
+              // Flip pieces
+              Bitboard to_flip = st->flippedPieces;
+              while(to_flip)
+              {
+                  Square s = pop_lsb(&to_flip);
+                  Piece flipped = piece_on(s);
+                  Piece resulting = ~flipped;
+
+                  remove_piece(flipped, s);
+                  put_piece(resulting, s);
+              }
+          }
           undrop_piece(make_piece(us, in_hand_piece_type(m)), pc, to); // Remove the dropped piece
+      }
       else
           move_piece(pc, to, from); // Put the piece back at the source square
       if (captures_to_hand() && !drop_loop() && is_promoted(to))

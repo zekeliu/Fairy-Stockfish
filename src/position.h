@@ -59,6 +59,7 @@ struct StateInfo {
   Bitboard   blockersForKing[COLOR_NB];
   Bitboard   pinners[COLOR_NB];
   Bitboard   checkSquares[PIECE_TYPE_NB];
+  Bitboard   flippedPieces;
   bool       capturedpromoted;
   bool       shak;
 };
@@ -118,6 +119,7 @@ public:
   bool captures_to_hand() const;
   bool first_rank_drops() const;
   bool drop_on_top() const;
+  bool enclosing_drop() const;
   Bitboard drop_region(Color c) const;
   Bitboard drop_region(Color c, PieceType pt) const;
   bool sittuyin_rook_drop() const;
@@ -125,6 +127,8 @@ public:
   bool drop_promoted() const;
   bool shogi_doubled_pawn() const;
   bool immobility_illegal() const;
+  bool flip_enclosed_pieces() const;
+  bool pass_on_stalemate() const;
   // winning conditions
   int n_move_rule() const;
   int n_fold_rule() const;
@@ -423,6 +427,11 @@ inline bool Position::drop_on_top() const {
   return var->dropOnTop;
 }
 
+inline bool Position::enclosing_drop() const {
+  assert(var != nullptr);
+  return var->enclosingDrop;
+}
+
 inline Bitboard Position::drop_region(Color c) const {
   assert(var != nullptr);
   return c == WHITE ? var->whiteDropRegion : var->blackDropRegion;
@@ -449,6 +458,23 @@ inline Bitboard Position::drop_region(Color c, PieceType pt) const {
   // Sittuyin rook drops
   if (pt == ROOK && sittuyin_rook_drop())
       b &= rank_bb(relative_rank(c, RANK_1, max_rank()));
+
+  // Filter out squares where the drop does not enclose at least one opponent's piece
+  if (enclosing_drop())
+  {
+      Bitboard theirs = pieces(~c);
+      b &=  shift<NORTH     >(theirs) | shift<SOUTH     >(theirs)
+          | shift<NORTH_EAST>(theirs) | shift<SOUTH_WEST>(theirs)
+          | shift<EAST      >(theirs) | shift<WEST      >(theirs)
+          | shift<SOUTH_EAST>(theirs) | shift<NORTH_WEST>(theirs);
+      Bitboard b2 = b;
+      while (b2)
+      {
+          Square s = pop_lsb(&b2);
+          if (!(attacks_bb(c, QUEEN, s, board_bb() & ~pieces(~c)) & ~DistanceRingBB[s][1] & pieces(c)))
+              b ^= s;
+      }
+  }
 
   return b;
 }
@@ -488,9 +514,22 @@ inline int Position::n_fold_rule() const {
   return var->nFoldRule;
 }
 
+inline bool Position::flip_enclosed_pieces() const {
+  assert(var != nullptr);
+  return var->flipEnclosedPieces;
+}
+
+inline bool Position::pass_on_stalemate() const {
+  assert(var != nullptr);
+  return var->passOnStalemate;
+}
+
 inline Value Position::stalemate_value(int ply) const {
   assert(var != nullptr);
-  return convert_mate_value(var->stalemateValue, ply);
+  if (!var->stalematePieceCount)
+      return convert_mate_value(var->stalemateValue, ply);
+  int c = count<ALL_PIECES>(sideToMove) - count<ALL_PIECES>(~sideToMove);
+  return c == 0 ? VALUE_DRAW : convert_mate_value(c < 0 ? var->stalemateValue : -var->stalemateValue, ply);
 }
 
 inline Value Position::checkmate_value(int ply) const {
@@ -602,6 +641,8 @@ inline bool Position::empty(Square s) const {
 }
 
 inline Piece Position::piece_on(Square s) const {
+  if (s == SQ_NONE)
+      return NO_PIECE;
   return board[s];
 }
 
@@ -612,6 +653,8 @@ inline Piece Position::unpromoted_piece_on(Square s) const {
 inline Piece Position::moved_piece(Move m) const {
   if (type_of(m) == DROP)
       return make_piece(sideToMove, dropped_piece_type(m));
+  if (type_of(m) == PASS)
+      return NO_PIECE;
   return board[from_sq(m)];
 }
 

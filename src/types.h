@@ -138,6 +138,7 @@ enum MoveType : int {
   DROP               = 4 << (2 * SQUARE_BITS),
   PIECE_PROMOTION    = 5 << (2 * SQUARE_BITS),
   PIECE_DEMOTION     = 6 << (2 * SQUARE_BITS),
+  PASS               = 7 << (2 * SQUARE_BITS),
 };
 
 constexpr int MOVE_TYPE_BITS = 4;
@@ -541,12 +542,14 @@ inline MoveType type_of(Move m) {
   return MoveType(m & (15 << (2 * SQUARE_BITS)));
 }
 
-constexpr Square to_sq(Move m) {
+inline Square to_sq(Move m) {
+  if (type_of(m) == PASS)
+      return SQ_NONE;
   return Square(m & SQUARE_BIT_MASK);
 }
 
 inline Square from_sq(Move m) {
-  if (type_of(m) == DROP)
+  if (type_of(m) == DROP || type_of(m) == PASS)
       return SQ_NONE;
   return Square((m >> SQUARE_BITS) & SQUARE_BIT_MASK);
 }
@@ -581,7 +584,7 @@ constexpr PieceType in_hand_piece_type(Move m) {
 }
 
 inline bool is_ok(Move m) {
-  return from_sq(m) != to_sq(m) || type_of(m) == PROMOTION; // Catch MOVE_NULL and MOVE_NONE
+  return from_sq(m) != to_sq(m) || type_of(m) != NORMAL; // Catch MOVE_NULL and MOVE_NONE
 }
 
 #endif // #ifndef TYPES_H_INCLUDED

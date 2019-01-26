@@ -367,6 +367,9 @@ namespace {
         }
     }
 
+    if (pos.pass_on_stalemate() && Type != CAPTURES && Type != EVASIONS && Type != QUIET_CHECKS)
+        *moveList++ = make<PASS>(SQ_A1, SQ_A1);
+
     return moveList;
   }
 
