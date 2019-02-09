@@ -254,7 +254,7 @@ private:
   void do_castling(Color us, Square from, Square& to, Square& rfrom, Square& rto);
 
   // Data members
-  Piece board[SQUARE_NB];
+  Piece board[SQUARE_NB + 1];
   Piece unpromotedBoard[SQUARE_NB];
   Bitboard byTypeBB[PIECE_TYPE_NB];
   Bitboard byColorBB[COLOR_NB];
@@ -641,8 +641,6 @@ inline bool Position::empty(Square s) const {
 }
 
 inline Piece Position::piece_on(Square s) const {
-  if (s == SQ_NONE)
-      return NO_PIECE;
   return board[s];
 }
 
@@ -653,8 +651,6 @@ inline Piece Position::unpromoted_piece_on(Square s) const {
 inline Piece Position::moved_piece(Move m) const {
   if (type_of(m) == DROP)
       return make_piece(sideToMove, dropped_piece_type(m));
-  if (type_of(m) == PASS)
-      return NO_PIECE;
   return board[from_sq(m)];
 }
 

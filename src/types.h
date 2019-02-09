@@ -107,7 +107,7 @@ typedef unsigned __int128 Bitboard;
 constexpr int SQUARE_BITS = 7;
 #else
 typedef uint64_t Bitboard;
-constexpr int SQUARE_BITS = 6;
+constexpr int SQUARE_BITS = 7;
 #endif
 
 constexpr int MAX_MOVES = 512;
@@ -538,23 +538,19 @@ constexpr Direction pawn_push(Color c) {
   return c == WHITE ? NORTH : SOUTH;
 }
 
-inline MoveType type_of(Move m) {
+constexpr MoveType type_of(Move m) {
   return MoveType(m & (15 << (2 * SQUARE_BITS)));
 }
 
-inline Square to_sq(Move m) {
-  if (type_of(m) == PASS)
-      return SQ_NONE;
+constexpr Square to_sq(Move m) {
   return Square(m & SQUARE_BIT_MASK);
 }
 
-inline Square from_sq(Move m) {
-  if (type_of(m) == DROP || type_of(m) == PASS)
-      return SQ_NONE;
+constexpr Square from_sq(Move m) {
   return Square((m >> SQUARE_BITS) & SQUARE_BIT_MASK);
 }
 
-inline int from_to(Move m) {
+constexpr int from_to(Move m) {
  return to_sq(m) + (from_sq(m) << SQUARE_BITS);
 }
 
