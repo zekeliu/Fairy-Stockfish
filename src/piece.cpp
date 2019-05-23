@@ -161,6 +161,12 @@ namespace {
       p->sliderCapture = {NORTH};
       return p;
   }
+  PieceInfo* vertical_piece() {
+      PieceInfo* p = new PieceInfo();
+      p->sliderQuiet = {NORTH, SOUTH};
+      p->sliderCapture = {NORTH, SOUTH};
+      return p;
+  }
   PieceInfo* shogi_knight_piece() {
       PieceInfo* p = new PieceInfo();
       p->stepsQuiet = {2 * NORTH + WEST, 2 * NORTH + EAST};
@@ -223,6 +229,7 @@ void PieceMap::init() {
   add(BISKNI, biskni_piece());
   add(SHOGI_PAWN, shogi_pawn_piece());
   add(LANCE, lance_piece());
+  add(VERTICAL, vertical_piece());
   add(SHOGI_KNIGHT, shogi_knight_piece());
   add(EUROSHOGI_KNIGHT, euroshogi_knight_piece());
   add(GOLD, gold_piece());

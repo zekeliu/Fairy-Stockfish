@@ -488,6 +488,21 @@ VariantMap variants; // Global object
         v->promotedPieceType[SHOGI_KNIGHT] = GOLD;
         return v;
     }
+    Variant* okisakishogi_variant() {
+        Variant* v = minishogi_variant_base();
+        v->maxRank = RANK_10;
+        v->maxFile = FILE_J;
+        v->remove_piece(LANCE);
+        v->remove_piece(SHOGI_KNIGHT);
+        v->add_piece(VERTICAL, 'l');
+        v->add_piece(KNIGHT, 'n');
+        v->add_piece(QUEEN, 'q');
+        v->startFen = "lnsgkqgsnl/1r6b1/pppppppppp/10/10/10/10/PPPPPPPPPP/1B6R1/LNSGQKGSNL[-] w 0 1";
+        v->promotionRank = RANK_8;
+        v->promotedPieceType[VERTICAL] = GOLD;
+        v->promotedPieceType[KNIGHT] = GOLD;
+        return v;
+    }
     Variant* capablanca_variant() {
         Variant* v = fairy_variant_base();
         v->maxRank = RANK_8;
@@ -639,6 +654,7 @@ void VariantMap::init() {
     add("tictactoe", tictactoe_variant());
 #ifdef LARGEBOARDS
     add("shogi", shogi_variant());
+    add("okisaki", okisakishogi_variant());
     add("capablanca", capablanca_variant());
     add("caparandom", caparandom_variant());
     add("janus", janus_variant());

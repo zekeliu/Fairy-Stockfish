@@ -326,6 +326,7 @@ enum Value : int {
   BiskniValueMg            = 800,   BiskniValueEg            = 800,
   ShogiPawnValueMg         =  90,   ShogiPawnValueEg         = 100,
   LanceValueMg             = 350,   LanceValueEg             = 250,
+  VerticalValueMg          = 500,   VerticalValueEg          = 500,
   ShogiKnightValueMg       = 350,   ShogiKnightValueEg       = 300,
   EuroShogiKnightValueMg   = 400,   EuroShogiKnightValueEg   = 400,
   GoldValueMg              = 610,   GoldValueEg              = 620,
@@ -345,7 +346,7 @@ enum PieceType {
   NO_PIECE_TYPE, PAWN, KNIGHT, BISHOP, ROOK, QUEEN,
   FERS, MET = FERS, ALFIL, SILVER, KHON = SILVER, AIWOK, BERS, DRAGON = BERS,
   ARCHBISHOP, CHANCELLOR, AMAZON, KNIBIS, BISKNI,
-  SHOGI_PAWN, LANCE, SHOGI_KNIGHT, EUROSHOGI_KNIGHT, GOLD, HORSE,
+  SHOGI_PAWN, LANCE, VERTICAL, SHOGI_KNIGHT, EUROSHOGI_KNIGHT, GOLD, HORSE,
   CLOBBER_PIECE, BREAKTHROUGH_PIECE, IMMOBILE_PIECE, WAZIR, COMMONER, KING,
   ALL_PIECES = 0,
 

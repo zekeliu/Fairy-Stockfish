@@ -30,6 +30,7 @@ Besides chess, the currently supported games are:
 - [Minishogi](https://en.wikipedia.org/wiki/Minishogi), [EuroShogi](https://en.wikipedia.org/wiki/EuroShogi), [Judkins shogi](https://en.wikipedia.org/wiki/Judkins_shogi)
 - [Kyoto shogi](https://en.wikipedia.org/wiki/Kyoto_shogi), [Microshogi](https://en.wikipedia.org/wiki/Micro_shogi)
 - [Dobutsu shogi](https://en.wikipedia.org/wiki/Dōbutsu_shōgi), [Goro goro shogi](https://en.wikipedia.org/wiki/D%C5%8Dbutsu_sh%C5%8Dgi#Variation)
+- [Okisaki shogi](https://en.wikipedia.org/wiki/Okisaki_shogi)
 
 **Related games**
 - [Breakthrough](https://en.wikipedia.org/wiki/Breakthrough_(board_game))
