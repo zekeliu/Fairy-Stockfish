@@ -22,6 +22,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <vector>
+#include <cmath>
 
 #include "evaluate.h"
 #include "movegen.h"
@@ -68,11 +70,31 @@ namespace {
     pos.set(variants.find(Options["UCI_Variant"])->second, fen, Options["UCI_Chess960"], &states->back(), Threads.main(), sfen);
 
     // Parse move list (if any)
+    std::vector<int> counts = {};
     while (is >> token && (m = UCI::to_move(pos, token)) != MOVE_NONE)
     {
         states->emplace_back();
         pos.do_move(m, states->back());
+        counts.push_back(MoveList<LEGAL>(pos).size());
     }
+
+    int min = 1000;
+    std::for_each (std::begin(counts), std::end(counts), [&](const int i) { min = std::min(i, min);});
+    int max = 0;
+    std::for_each (std::begin(counts), std::end(counts), [&](const int i) { max = std::max(i, max);});
+    int sum = 0;
+    std::for_each (std::begin(counts), std::end(counts), [&](const int i) { sum += i;});
+    double mean = double(sum) / counts.size();
+    double sum_squares = 0;
+    std::for_each (std::begin(counts), std::end(counts), [&](const int i) { sum_squares += (i - mean) * (i - mean);});
+    double stddev = std::sqrt(sum_squares / counts.size());
+
+    std::cout << "Branching factor stats" << std::endl
+              << "n:       " << counts.size() << std::endl
+              << "min:     " << min << std::endl
+              << "max:     " << max << std::endl
+              << "mean:    " << mean << std::endl
+              << "stdddev: " << stddev << std::endl;
   }
 
 
