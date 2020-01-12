@@ -197,6 +197,17 @@ namespace {
         Options["VariantPath"] = token;
   }
 
+  // rules() prints the rules of the given variant.
+
+  void rules(istringstream& is) {
+
+    string token;
+    if (is >> token && variants.find(token) != variants.end())
+        sync_cout << variants.find(token) << sync_endl;
+    else
+        sync_cout << "No such variant: " << token << sync_endl;
+  }
+
 } // namespace
 
 
@@ -276,6 +287,7 @@ void UCI::loop(int argc, char* argv[]) {
       else if (token == "d")     sync_cout << pos << sync_endl;
       else if (token == "eval")  sync_cout << Eval::trace(pos) << sync_endl;
       else if (token == "load")  { load(is); argc = 1; } // continue reading stdin
+      else if (token == "rules") rules(is);
       else
           sync_cout << "Unknown command: " << cmd << sync_endl;
 
