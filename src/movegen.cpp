@@ -35,7 +35,7 @@ namespace {
         for (PieceType pt_gating : pos.piece_types())
             if (pos.count_in_hand(us, pt_gating) && (pos.drop_region(us, pt_gating) & from))
                 *moveList++ = make_gating<T>(from, to, pt_gating, from);
-    if (pos.seirawan_gating() && T == CASTLING && (pos.gates(us) & to))
+    if (T == CASTLING && pos.seirawan_gating() && (pos.gates(us) & to))
         for (PieceType pt_gating : pos.piece_types())
             if (pos.count_in_hand(us, pt_gating) && (pos.drop_region(us, pt_gating) & to))
                 *moveList++ = make_gating<T>(from, to, pt_gating, to);

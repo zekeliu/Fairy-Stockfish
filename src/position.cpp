@@ -944,8 +944,14 @@ bool Position::pseudo_legal(const Move m) const {
                 || (drop_promoted() && type_of(pc) == promoted_piece_type(in_hand_piece_type(m))));
 
   // Use a slower but simpler function for uncommon cases
-  if (type_of(m) != NORMAL || is_gating(m))
+  if (type_of(m) != NORMAL)
       return MoveList<LEGAL>(*this).contains(m);
+
+  if (is_gating(m)
+      && (   !seirawan_gating()
+          || !count_in_hand(us, gating_type(m))
+          || !(gates(us) & drop_region(us, gating_type(m)) & from)))
+          return false;
 
   // Xiangqi soldier
   if (type_of(pc) == SOLDIER && unpromoted_soldier(us, from) && file_of(from) != file_of(to))
