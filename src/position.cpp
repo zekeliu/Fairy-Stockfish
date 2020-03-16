@@ -941,7 +941,7 @@ bool Position::pseudo_legal(const Move m) const {
   // Use a fast check for piece drops
   if (type_of(m) == DROP)
       return   piece_drops()
-            && (count_in_hand(us, in_hand_piece_type(m)) > 0 || (two_boards() && virtual_drop(us, type_of(pc))))
+            && (count_in_hand(us, in_hand_piece_type(m)) > 0 || (two_boards() && allow_virtual_drop(us, type_of(pc))))
             && (drop_region(us, type_of(pc)) & ~pieces() & to)
             && (   type_of(pc) == in_hand_piece_type(m)
                 || (drop_promoted() && type_of(pc) == promoted_piece_type(in_hand_piece_type(m))));
