@@ -109,7 +109,7 @@ namespace {
             v +=  QuadraticOurs[pt1][pt2] * pieceCount[Us][pt2] * (pos.must_capture() && pt1 == KNIGHT && pt2 == PAWN ? 2 : pos.check_counting() && pt1 <= BISHOP ? 0 : 1)
                 + QuadraticTheirs[pt1][pt2] * pieceCount[Them][pt2];
 
-        bonus += pieceCount[Us][pt1] * v;
+        bonus += (pieceCount[Us][pt1] + pos.count_in_hand(Us, PieceType(pt1))) * v;
     }
 
     return bonus * (1 + pos.must_capture());
