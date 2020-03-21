@@ -112,6 +112,13 @@ namespace {
         bonus += pieceCount[Us][pt1] * v;
     }
 
+    if (!pos.count<KING>(Us) && pos.count<KING>(Them))
+    {
+        bonus += QuadraticOurs[PAWN][PAWN] * pieceCount[Us][PAWN] * pieceCount[Us][PAWN] * 2 / 3;
+        bonus += 500 * (pos.count<ALL_PIECES>(Us) - pos.count<PAWN>(Us));
+        bonus -= 200 * (pos.count<ALL_PIECES>(Them) - pos.count<PAWN>(Them)) * pieceCount[Us][PAWN];
+    }
+
     return bonus * (1 + pos.must_capture());
   }
 
