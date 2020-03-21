@@ -100,7 +100,7 @@ namespace {
     // Second-degree polynomial material imbalance, by Tord Romstad
     for (int pt1 = NO_PIECE_TYPE; pt1 <= QUEEN; ++pt1)
     {
-        if (!pieceCount[Us][pt1] || (pos.extinction_value() == VALUE_MATE && pt1 != KNIGHT))
+        if (!pieceCount[Us][pt1])
             continue;
 
         int v = 0;
